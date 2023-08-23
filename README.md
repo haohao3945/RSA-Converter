@@ -1,5 +1,3 @@
-# RSA-Converter
-
 # RSA Cryptography Application
 
 This is a Java Swing application that demonstrates RSA encryption and decryption using user-provided keys and messages.
