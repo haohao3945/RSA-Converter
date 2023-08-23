@@ -311,6 +311,7 @@ public class RSAForm extends javax.swing.JFrame {
         char characterRepresentation = (char) x;
         return characterRepresentation;
     }
+	// Perform the necoding string
     private BigInteger encodeStringToASCII(String x) {
         String passedString = x;
         String result = "111";//Ensure that the first 111 padding is in place.
@@ -323,56 +324,83 @@ public class RSAForm extends javax.swing.JFrame {
         result = result.concat("111");
         return new BigInteger(result);
     }
+	//Make ASCII to the pure content
        public String decodeASCIIToString(BigInteger x) {
+
+	// Make sure everything pass in is string to proceed
         String passedString = x.toString();
         String result = "";
         String grabbedChar;
+
+	// For loop to decode the ASCI word by word to puur content
         for (int i = 0; i < passedString.length(); i = i + 3) {
             try {
                 grabbedChar = passedString.substring(i, i + 3);
                 result = result.concat(String.valueOf(decodeASCIIToLetter(Integer.parseInt(grabbedChar))));
 
             } catch (StringIndexOutOfBoundsException e) {
+		
                 System.out.println("\n!\n!\n!\n!!!!Decoding error, got an exception when trying to decode "
                         + "-are you using the right public key?!!!!\n!\n!\n!\n!");
             }
         }
+
+	// get the result
         result = result.substring(1, result.length() - 1);
         return result;
     }
+
+
     private void encybtnActionPerformed(java.awt.event.ActionEvent evt) {                                        
         // TODO add your handling code here:
+	// when the encrypt button is click
+	// get the key that store in
         String key = pkeyency.getText();
+
+	// get the message
         String messg = plainmsg.getText();
+
+	// split the primary key with public key and exponent
         String[] names = key.split("\\+");
         String te = names[0];
         String tn = names[1];
-
-
         BigInteger e = new BigInteger(te);
         BigInteger n = new BigInteger(tn);
         
-
+	// encoded the message
         BigInteger msg = encodeStringToASCII(messg);  // Any integer in the range [0, n)
-        BigInteger enc = msg.modPow(e, n);
+        //do encryption
+	BigInteger enc = msg.modPow(e, n);
+	//send the encrypt back to the textbox
         enptmsg.setText(enc.toString());
     }                                       
 
     private void decybtnActionPerformed(java.awt.event.ActionEvent evt) {                                        
         // TODO add your handling code here:
+	// Get the key
         String key = pkeydecy.getText();
+
+	// Get the encrypted message
         String messg = ciphermsg.getText();
-        String[] names = key.split("\\+");
+        // split the key to exponent and key
+	String[] names = key.split("\\+");
         String te = names[0];
         String tn = names[1];
         
         BigInteger d = new BigInteger(te);
         BigInteger n = new BigInteger(tn);
+	
+	// Change to big integer to proceed
         BigInteger msg = new BigInteger(messg);  // Any integer in the range [0, n)
-        BigInteger dec = msg.modPow(d, n);
-        decytxtbox.setText(decodeASCIIToString(dec));
-    }                                       
 
+	// perform the decryption
+        BigInteger dec = msg.modPow(d, n);
+
+	// Send original message to interface
+        decytxtbox.setText(decodeASCIIToString(dec));
+    }                                    
+	
+    // Generation of public and private key
     private void GenerateKeyActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // TODO add your handling code here:
         BigInteger p = BigInteger.probablePrime(512, new Random());
@@ -387,7 +415,8 @@ public class RSAForm extends javax.swing.JFrame {
 
 	BigInteger e = new BigInteger("65537");
         BigInteger d = e.modInverse(z);
-        
+
+	
         String pvtkey = d.toString() +"+"+n.toString();
 	String pubkey = e.toString() +"+"+n.toString();
         
